@@ -1,8 +1,8 @@
-package org2nd2go.bible;
+package org2nd2go.bible.content;
 
 
 
-import org2nd2go.bible.*;
+import org2nd2go.bible.content.BibleContentTw;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import org.jsoup.select.Elements;
-import org2nd2go.bible.Basic;
+import org2nd2go.bible.basic.*;
 //import org.jsoup.select.;
 
 /*
@@ -33,20 +33,20 @@ import org2nd2go.bible.Basic;
  *
  * @author mark
  */
-public class BibleContent {
+public class BibleContent implements Title,TitleShort {
 
     String BIBLE_BASE = "/home/mark/bible/";
 
     public static void main(String[] args) throws IOException, ParseException {
-//        new BibleContent_CBOL().getContent();
-//        new BibleContent_CBOL().getContent("tw",1,1);
-//        new BibleContent_CBOL().getContent("tw",40,6);
-        BibleContent_CBOL bc = new BibleContent_CBOL();
-//        bc.createBookSql("tw");
-        bc.createBookSql("en");
+//        new BibleContentTw().getContent();
+//        new BibleContentTw().getContent("tw",1,1);
+//        new BibleContentTw().getContent("tw",40,6);
+        BibleContentTw bc = new BibleContentTw();
+//        bc.getBookContent("tw");
+    //    bc.createBookSql("en");
         
         
-//        bc.createBookSql("kjv");
+//        bc.getBookContent("kjv");
 
     }
 
@@ -70,9 +70,9 @@ public class BibleContent {
 
         for (int book = 1; book <= 66; book++) {
             int k = book - 1;
-            int chapCnt = Basic.CHAPTER_COUNT[k];
-            System.out.println("-- book#" + book + ", " + Basic.TITLE_EN[k] + ", " + Basic.TITLE_TW[k] + ", chapters=" + chapCnt);
-            sb.append("\n-- book#" + book + ", " + Basic.TITLE_EN[k] + ", " + Basic.TITLE_TW[k] + ", chapters=" + chapCnt);
+            int chapCnt = CHAPTER_COUNT[k];
+            System.out.println("-- book#" + book + ", " + TITLE_EN[k] + ", " + TITLE_TW[k] + ", chapters=" + chapCnt);
+            sb.append("\n-- book#" + book + ", " + TITLE_EN[k] + ", " + TITLE_TW[k] + ", chapters=" + chapCnt);
 //
 //        
 //        

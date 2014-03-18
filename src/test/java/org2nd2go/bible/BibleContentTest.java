@@ -6,6 +6,7 @@
 
 package org2nd2go.bible;
 
+import org2nd2go.bible.content.BibleContentTw;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -24,7 +25,7 @@ public class BibleContentTest {
 
     @Test
     public void testGetContent() throws Exception {
-        new BibleContent_CBOL().getContent();
+        new BibleContentTw().getContent();
     }
 
     @Test

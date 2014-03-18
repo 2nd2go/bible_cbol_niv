@@ -7,6 +7,7 @@
 package org2nd2go.bible;
 
 import org.junit.Test;
+import org2nd2go.bible.util.DirCbol;
 import static org.junit.Assert.*;
 
 /**
@@ -18,10 +19,13 @@ public class DirCbolTest {
     public DirCbolTest() {
     }
 
+ 
     @Test
     public void testCheckCbolOriginalDir() {
-        new DirCbol().checkCbolOriginalDir();
-        
+           new DirCbol().checkCbolOriginalDir();
+           new DirCbol().checkCbolOriginalDirV2();
+           new DirCbol().checkCbolOriginalDirV3();
+           new DirCbol().checkCbolOriginalDirV4();
     }
     
 }

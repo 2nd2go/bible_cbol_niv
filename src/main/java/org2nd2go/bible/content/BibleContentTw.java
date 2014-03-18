@@ -1,10 +1,11 @@
-package org2nd2go.bible;
+package org2nd2go.bible.content;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -16,7 +17,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import org.jsoup.select.Elements;
-import org2nd2go.bible.Basic;
+import org2nd2go.bible.basic.*;
 //import org.jsoup.select.;
 
 /*
@@ -29,24 +30,147 @@ import org2nd2go.bible.Basic;
  *
  * @author mark
  */
-public class BibleContent_CBOL {
+public class BibleContentTw implements Title, TitleShort {
 
-    String BIBLE_BASE = "/home/mark/bible/cobl/unv";
+    String CBOL_HOME = "/home/mark/bible/tw/";
 
     public static void main(String[] args) throws IOException, ParseException {
-//        new BibleContent_CBOL().getContent();
-//        new BibleContent_CBOL().getContent("tw",1,1);
-//        new BibleContent_CBOL().getContent("tw",40,6);
-        BibleContent_CBOL bc = new BibleContent_CBOL();
-        String str = bc.getOneChapterHtmlSource("cobl", "Matt", 6);
-    //    System.out.printf(str);
-        System.out.printf("\n");
-        
-        bc.getVerses(str);
-        
-        
-//        bc.createBookSql("tw");
 
+        BibleContentTw bc = new BibleContentTw();
+//        bc.makeTextbook();
+        String str = bc.getSqlStatement();
+        bc.createSQL(str);
+//        System.out.println(str);
+
+    }
+//        new BibleContentTw().getContent();
+//        new BibleContentTw().getContent("tw",1,1);
+//        new BibleContentTw().getContent("tw",40,6);
+
+    public void makeTextbook() throws ParseException, IOException {
+
+        String note1 = "\nsource from:"
+                + "\n  http://a2z.fhl.net/CBOL.html"
+                + "\n  本畫面由信望愛資訊中心之CBOL計畫產生，歡迎連結，無須申請。"
+                + "\n  CBOL計畫之資料版權宣告採用GNU Free Documentation License。"
+                + "\n  願上帝的話能建造每一位使用這系統的人，來榮耀祂自己的名";
+        String note2 = "\n\nconverted by:"
+                + "\n  mark@2ng2go.org"
+                + "\n  3/18/2014 ";
+        String textbook = getBookContent() + note1 + note2;
+
+        createBook(textbook);
+
+//        System.out.println(textbook);
+//        bc.getBookContent("tw");
+    }
+
+    public void createBook(String s) {
+        String filename = "bible_chinese.txt";
+
+        Path file = Paths.get(CBOL_HOME + filename);
+
+        Charset charset = Charset.forName("UTF-8");
+        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+            writer.write(s, 0, s.length());
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+
+    }
+
+        public void createSQL(String s) {
+        String filename = "bible_chinese.sql";
+
+        Path file = Paths.get(CBOL_HOME + filename);
+
+        Charset charset = Charset.forName("UTF-8");
+        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+            writer.write(s, 0, s.length());
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+
+    }
+    
+    public String getBookContent() throws ParseException, IOException {
+        StringBuilder sb = new StringBuilder();
+        int book;
+        int counter = 0;
+        String filename;
+//        for (int k = 1; k <= 66; k++) {
+        for (int k = 1; k <= 66; k++) {
+            book = k - 1;
+            sb.append("\n\n Book#")
+                    .append(k)
+                    .append(" ")
+                    .append(TITLE_TW[book])
+                    .append(" ")
+                    .append(TITLE_EN[book])
+                    .append("\n\n");
+
+            for (int chapter = 1; chapter <= CHAPTER_COUNT[book]; chapter++) {
+                String str = getVerses(book, chapter);
+//          sb.       
+//                System.out.println(str);
+                sb.append(str);
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getSqlStatement() throws ParseException, IOException {
+        StringBuilder sb = new StringBuilder();
+       
+//        for (int k = 1; k <= 1; k++) {
+          for (int k = 1; k <= 66; k++) {
+            for (int chapter = 1; chapter <= CHAPTER_COUNT_1TO66[k]; chapter++) {
+                String str = getVersesSql(k, chapter);
+                sb.append(str);
+            }
+        }
+        return sb.toString();
+    }
+
+    public String getBookSource(int book, int chapter) {
+        StringBuilder sb = new StringBuilder();
+        String filename = "unv_" + TITLE_SHORT_EN[book] + "_" + chapter + ".html";
+
+        Path file = Paths.get(CBOL_HOME + filename);
+
+        Charset charset = Charset.forName("UTF-8");
+        try (BufferedReader reader = Files.newBufferedReader(file, charset)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+//                System.out.println(line);
+            }
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+
+        return sb.toString();
+    }
+
+    
+    public String getBookSource1to66(int book, int chapter) {
+        StringBuilder sb = new StringBuilder();
+        String filename = "unv_" + TITLE_SHORT_EN_1TO66[book] + "_" + chapter + ".html";
+
+        Path file = Paths.get(CBOL_HOME + filename);
+
+        Charset charset = Charset.forName("UTF-8");
+        try (BufferedReader reader = Files.newBufferedReader(file, charset)) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+//                System.out.println(line);
+            }
+        } catch (IOException x) {
+            System.err.format("IOException: %s%n", x);
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -54,54 +178,62 @@ public class BibleContent_CBOL {
      * @param ver tw for traditional Chinese, kjv for
      * @param book 1 to 66
      */
-    public void createBookSql(String ver) throws ParseException, IOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("-- \n");
-        sb.append("-- generated by 2nd2go.org\n");
-        sb.append("-- \n\n");
-//        Charset charset = Charset.forName("US-ASCII");
-        Charset charset = Charset.forName("UTF-8");
-//      
-//        if (ver.equals("tw")) {
-//            charset = Charset.forName("UTF-8");
-//        }
-        Path file = Paths.get(BIBLE_BASE + "Matt" + ".sql");
-
-        for (int book = 40; book <= 40; book++) {
-            
-            
-            
-            int k = book - 1;
-            int chapCnt = Basic.CHAPTER_COUNT[k];
-            System.out.println("-- book#" + book + ", " + Basic.TITLE_EN[k] + ", " + Basic.TITLE_TW[k] + ", chapters=" + chapCnt);
-            sb.append("\n-- book#" + book + ", " + Basic.TITLE_EN[k] + ", " + Basic.TITLE_TW[k] + ", chapters=" + chapCnt);
+//    public void createBookSql(String ver) throws ParseException, IOException {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("-- \n");
+//        sb.append("-- generated by 2nd2go.org\n");
+//        sb.append("-- \n\n");
+////        Charset charset = Charset.forName("US-ASCII");
+//        Charset charset = Charset.forName("UTF-8");
+////      
+////        if (ver.equals("tw")) {
+////            charset = Charset.forName("UTF-8");
+////        }
+//        //    TODO
+////        Path file = Paths.get(BIBLE_BASE + "Matt" + ".sql");
+//        Path file = Paths.get(CBOL_HOME + "Matt" + ".sql");
 //
-//        
-//        
+//        for (int book = 40; book <= 40; book++) {
+//
+//            int k = book - 1;
+//            int chapCnt = CHAPTER_COUNT[k];
+//            System.out.println("-- book#" + book + ", " + TITLE_EN[k] + ", " + TITLE_TW[k] + ", chapters=" + chapCnt);
+//            sb.append("\n-- book#" + book + ", " + TITLE_EN[k] + ", " + TITLE_TW[k] + ", chapters=" + chapCnt);
+////
+////        
+////        
+//
+////        
+////        
+////        
+//            for (int chap = 1; chap <= chapCnt; chap++) {
+////            System.out.println(getInsertStatement(ver, book, chap));
+////                String s = getInsertStatement(ver, book, chap);
+//                String s = "TODO";
+//
+//                System.out.println("  ... debug ..." + s);
+//                sb.append(s);
+//
+//            }
+//        }
+//
+//        //
+//        //
+//        //
+//        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+//            writer.write(sb.toString(), 0, sb.toString().length());
+//        } catch (IOException x) {
+//            x.printStackTrace();
+//            System.err.format("%n%n createBookSql   ver=%s %n%n", ver);
+//        }
+//
+//    }
 
-//        
-//        
-//        
-            for (int chap = 1; chap <= chapCnt; chap++) {
-//            System.out.println(getInsertStatement(ver, book, chap));
-//                String s = getInsertStatement(ver, book, chap);
-                String s = "TODO";
+    public String getFilename(int book, int chapter) {
 
-                System.out.println("  ... debug ..." + s);
-                sb.append(s);
+        StringBuilder sb = new StringBuilder();
 
-            }
-        }
-
-        //
-        //
-        //
-        try (BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
-            writer.write(sb.toString(), 0, sb.toString().length());
-        } catch (IOException x) {
-            x.printStackTrace();
-            System.err.format("%n%n createBookSql   ver=%s %n%n", ver);
-        }
+        return sb.toString();
 
     }
 
@@ -136,7 +268,7 @@ public class BibleContent_CBOL {
         return strBook + strChapter;
     }
 
-    public String getInsertStatement(String ver, String book, int chapter) throws ParseException, IOException {
+    public String getInsertStatement(String book, int chapter) throws ParseException, IOException {
 //        String strBook = String.format("B%02d", book);
 //        String strChapter = String.format("C%03d", chapter);
 //        String strHtml = getOneChapterHtmlSource(ver, getBook/home/mark/bible/checking/bgpda/hb_1_0Chapter("Matt", 6));
@@ -173,16 +305,6 @@ public class BibleContent_CBOL {
             plain = plain.replace("</p>", "");
             plain = plain.replace("<i>", "");
             plain = plain.replace("</i>", "");
-            if (ver.equals("tw")) {
-                plain = plain.replace(" ", "");
-                plain = plain.replace("．", "。");
-                plain = plain.replace("、", "，");
-
-            } else {
-                // for English
-                plain = plain.replace("'", "&rsquo;");
-
-            }
 
             //
             // compose SQL
@@ -190,7 +312,7 @@ public class BibleContent_CBOL {
             verse++;
 
 //            System.out.println("ver="+ver+" book"+book+" chapter="+chapter+" "+verse + "=> " + plain);
-            String temp = String.format("%n('%s','%s','%s','%s','%s'),", ver, book, chapter, verse, plain);
+            String temp = String.format("%n('tw','%s','%s','%s','%s'),", book, chapter, verse, plain);
             sb.append(temp);
 //            System.out.println(temp);
 
@@ -254,6 +376,115 @@ public class BibleContent_CBOL {
             System.out.println(chapNum + " : " + plain);
 
         }
+
+    }
+
+    public String getVerses(int book, int chapter) throws ParseException, IOException {
+        String html = getBookSource(book, chapter);
+
+        StringBuilder sb = new StringBuilder();
+        int verse = 0;
+        String result = "";
+        Document doc = Jsoup.parse(html);
+        Elements testing = doc.select("TD");
+        for (Element src : testing) {
+            if (src.toString().contains("<a href=")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().length() <= 7) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            //<img src
+            if (src.toString().contains("<img src")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().contains("<p>&nbsp;</p>")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().contains("align")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+
+            verse++;
+            String plain;
+            plain = src.toString().replace("<td>", "");
+            plain = plain.replace("</td>", "");
+
+            System.out.print("(" + (1 + book) + ")" + TITLE_SHORT_TW[book] + " " + chapter + ":");
+            System.out.println(verse + " " + plain);
+
+            result += "(" + (1 + book) + ")" + TITLE_SHORT_TW[book] + " " + chapter + ":" + verse + " " + plain + "\n";
+        }
+        return result;
+
+    }
+
+    public String getVersesSql(int book, int chapter) throws ParseException, IOException {
+        String html = getBookSource1to66(book, chapter);
+        StringBuilder result = new StringBuilder();
+        String insert = "\n--\n-- Book#" + book + " " + TITLE_TW_1TO66[book] + " chapter "+chapter+"\n--\n"
+                + "INSERT INTO `bible`.`bible` (`VERSION`, `BOOK`, `CHAPTER`, `VERSE`, `CONTENT`) VALUES ";
+        result.append(insert);
+//        StringBuilder sb = new StringBuilder();
+        int verse = 0;
+        String sql = "";
+        Document doc = Jsoup.parse(html);
+        Elements testing = doc.select("TD");
+        for (Element src : testing) {
+            if (src.toString().contains("<a href=")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().length() <= 7) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            //<img src
+            if (src.toString().contains("<img src")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().contains("<p>&nbsp;</p>")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+            if (src.toString().contains("align")) {
+//                System.out.println("   ... to ignore");
+//                System.out.println("   ... " + src);
+                continue;
+            }
+
+            verse++;
+            String plain;
+            plain = src.toString().replace("<td>", "");
+            plain = plain.replace("</td>", "");
+
+//            System.out.print("(" + (1 + book) + ")" + TITLE_SHORT_TW[book] + " " + chapter + ":");
+//            System.out.println(verse + " " + plain);
+            sql = String.format("\n('tw','%s','%s','%s','%s'),", book, chapter, verse, plain);
+            result.append(sql);
+            // result += sql;
+            //  result += "(" + (1 + book) + ")" + TITLE_SHORT_TW[book] + " " + chapter + ":" + verse + " " + plain + "\n";
+        }
+
+        result.deleteCharAt(result.length() - 1);
+        result.append(";");
+
+        return result.toString();
 
     }
 
